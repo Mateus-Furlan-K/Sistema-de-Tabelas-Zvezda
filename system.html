@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Football Tables</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/system.css">
+</head>
+<body>
+  <header class="topbar system-topbar">
+    <div class="brand-area">
+      <a class="back-link" href="index.html">← Sistemas</a>
+      <div>
+        <h1 id="systemTitle">Carregando...</h1>
+        <p id="systemDescription"></p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button id="exportSystemBtn" class="secondary-btn">💾 Backup deste sistema</button>
+      <button id="importTeamsBtn" class="secondary-btn">↔ Importar equipes</button><button id="newTeamBtn" class="primary-btn">+ Nova equipe</button>
+    </div>
+  </header>
+
+  <main class="system-main">
+    <section class="system-toolbar">
+      <div>
+        <h2>Configuração</h2>
+        <p>Gerencie equipes, anos e divisões deste sistema.</p>
+      </div>
+      <div class="toolbar-actions">
+        <button id="addBeforeYearBtn" class="secondary-btn">← Ano anterior</button>
+        <button id="addYearRangeBtn" class="secondary-btn">+ Adicionar anos</button>
+        <button id="addAfterYearBtn" class="secondary-btn">Ano seguinte →</button>
+        <button id="addDivisionBtn" class="secondary-btn">+ Divisão</button>
+        <button id="advanceSeasonBtn" class="primary-btn">Avançar temporada →</button>
+      </div>
+    </section>
+
+    <section class="stats-row" id="statsRow"></section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Adicionar equipe a uma tabela</h2>
+          <p>Escolha uma equipe já cadastrada e uma temporada/divisão.</p>
+        </div>
+      </div>
+      <form id="appearanceForm" class="appearance-form">
+        <label class="field-label">Equipe
+          <select id="teamSelect" required></select>
+        </label>
+        <label class="field-label">Ano
+          <select id="yearSelect" required></select>
+        </label>
+        <label class="field-label">Divisão
+          <select id="divisionSelect" required></select>
+        </label>
+        <label class="field-label">Grupo
+          <select id="groupSelect" required></select>
+        </label>
+        <button class="primary-btn form-button" type="submit">Adicionar</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Equipes cadastradas</h2>
+          <p>Editar aqui altera o nome, sigla e escudo em todas as temporadas.</p>
+        </div>
+      </div>
+      <div id="teamsList" class="teams-list"></div>
+    </section>
+
+    <section class="panel history-panel">
+      <div class="panel-heading stats-panel-heading">
+        <div>
+          <h2>Estatísticas históricas</h2>
+          <p>Escolha as divisões que devem entrar nos totais. Use as setas dos cabeçalhos para ordenar a tabela.</p>
+        </div>
+        <div id="statsDivisionFilter" class="stats-division-filter"></div>
+      </div>
+      <div id="historyStats" class="history-stats"></div>
+    </section>
+
+    <section class="panel history-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Histórico das divisões</h2>
+          <p>Quanto mais à esquerda, mais antigo o ano. Quanto mais abaixo, menor a divisão.</p>
+        </div>
+      </div>
+      <div class="matrix-wrapper">
+        <div id="matrix" class="matrix"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="teamModal" class="modal hidden">
+    <div class="modal-content">
+      <button class="close-modal" id="closeTeamModal">×</button>
+      <h2 id="teamModalTitle">Nova equipe</h2>
+      <div class="form-grid">
+        <label class="field-label">Nome
+          <input id="teamNameInput" maxlength="100" placeholder="Ex.: Chapecoense">
+        </label>
+        <label class="field-label">Sigla (opcional)
+          <input id="teamShortInput" maxlength="6" placeholder="CHA">
+        </label>
+        <label class="field-label full">Escudo (opcional)
+          <input id="teamLogoInput" type="url" placeholder="https://...">
+          <div class="logo-upload-row">
+            <input id="teamLogoFileInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+            <button type="button" id="clearLogoBtn" class="small-btn">Remover escudo</button>
+          </div>
+          <div id="logoPreviewWrap" class="logo-preview-wrap hidden"><img id="logoPreview" alt="Prévia do escudo"></div>
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button id="cancelTeamBtn" class="secondary-btn">Cancelar</button>
+        <label class="continue-create"><input id="continueTeamInput" type="checkbox"> Continuar cadastrando equipes</label><button id="saveTeamBtn" class="primary-btn">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="logoCropModal" class="modal hidden">
+    <div class="modal-content small-modal logo-crop-modal">
+      <button class="close-modal" id="closeLogoCropModal">×</button>
+      <h2>Enquadrar escudo</h2>
+      <div class="crop-canvas-wrap"><canvas id="logoCropCanvas" width="300" height="300"></canvas></div>
+      <div class="crop-controls">
+        <label>Zoom <input id="logoZoomInput" type="range" min="1" max="3" step="0.01" value="1"></label>
+        <label>Horizontal <input id="logoXInput" type="range" min="-1" max="1" step="0.01" value="0"></label>
+        <label>Vertical <input id="logoYInput" type="range" min="-1" max="1" step="0.01" value="0"></label>
+      </div>
+      <div class="modal-actions"><button id="cancelLogoCropBtn" class="secondary-btn">Cancelar</button><button id="saveLogoCropBtn" class="primary-btn">Usar escudo</button></div>
+    </div>
+  </div>
+
+  <div id="yearRangeModal" class="modal hidden"><div class="modal-content small-modal"><button class="close-modal" id="closeYearRangeModal">×</button><h2>Adicionar anos</h2><p style="font-size:12px;color:var(--muted);margin:-10px 0 18px">Crie um intervalo inteiro de anos de uma vez.</p><div class="form-grid"><label class="field-label">Ano inicial<input id="rangeStartInput" type="number" min="1800" max="3000" placeholder="Ex.: 2010"></label><label class="field-label">Ano final<input id="rangeEndInput" type="number" min="1800" max="3000" placeholder="Ex.: 2026"></label></div><div class="modal-actions"><button id="cancelYearRangeBtn" class="secondary-btn">Cancelar</button><button id="saveYearRangeBtn" class="primary-btn">Adicionar anos</button></div></div></div>
+
+  <div id="knockoutModal" class="modal hidden">
+    <div class="modal-content knockout-modal-content">
+      <button class="close-modal" id="closeKnockoutModal">×</button>
+      <h2 id="knockoutTitle">Mata-mata</h2>
+      <div class="form-grid">
+        <label class="field-label">Nome do mata-mata
+          <input id="knockoutNameInput" maxlength="80" placeholder="Ex.: Playoffs pelo título">
+        </label>
+        <label class="field-label">Tamanho do mata-mata
+          <select id="knockoutSizeInput">
+            <option value="2">2 equipes</option>
+            <option value="4">4 equipes</option>
+            <option value="8" selected>8 equipes</option>
+            <option value="16">16 equipes</option>
+            <option value="32">32 equipes</option>
+          </select>
+        </label>
+      </div>
+      <h3 class="subheading">Preencha as vagas</h3>
+      <div id="knockoutSlots" class="knockout-slots"></div>
+      <p class="modal-note">Você pode deixar vagas vazias e preenchê-las depois. Os confrontos são montados na ordem das vagas.</p>
+      <div class="modal-actions">
+        <button id="cancelKnockoutBtn" class="secondary-btn">Cancelar</button>
+        <button id="saveKnockoutBtn" class="primary-btn">Criar mata-mata</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="cellAddModal" class="modal hidden">
+    <div class="modal-content">
+      <button class="close-modal" id="closeCellAddModal">×</button>
+      <h2>Adicionar equipes à tabela</h2>
+      <p class="modal-note">Ano: <strong id="cellAddYear"></strong> · Divisão: <strong id="cellAddDivision"></strong> · Grupo: <strong id="cellAddGroup"></strong></p>
+      <div id="cellTeamPicker" class="knockout-team-picker"></div>
+      <div class="modal-actions"><button id="cancelCellAddBtn" class="secondary-btn">Cancelar</button><button id="saveCellAddBtn" class="primary-btn">Adicionar selecionadas</button></div>
+    </div>
+  </div>
+
+  <div id="importTeamsModal" class="modal hidden">
+    <div class="modal-content">
+      <button class="close-modal" id="closeImportTeamsModal">×</button>
+      <h2>Importar equipes de outro sistema</h2>
+      <label class="field-label">Sistema de origem<select id="sourceSystemSelect"></select></label>
+      <div id="importTeamPicker" class="knockout-team-picker" style="margin-top:12px"></div>
+      <div class="modal-actions"><button id="cancelImportTeamsBtn" class="secondary-btn">Cancelar</button><button id="saveImportTeamsBtn" class="primary-btn">Importar selecionadas</button></div>
+    </div>
+  </div>
+
+  <div id="appearanceModal" class="modal hidden">
+    <div class="modal-content">
+      <button class="close-modal" id="closeAppearanceModal">×</button>
+      <h2 id="appearanceTitle">Editar temporada</h2>
+      <div class="form-grid">
+        <label class="field-label">Pontos
+          <input id="pointsInput" type="number" min="0" step="1">
+        </label>
+        <label class="field-label">Saldo de gols
+          <input id="gdInput" type="number" step="1">
+        </label>
+        <label class="field-label">Colocação
+          <select id="placementInput">
+            <option value="">Não definida</option>
+            <option value="champion">🏆 Campeão</option>
+            <option value="vice">🥈 Vice-campeão</option>
+            <option value="third">🥉 3º lugar</option>
+          </select>
+        </label>
+      </div>
+
+      <h3 class="subheading">Competições</h3>
+      <div class="competition-options">
+        <label><input id="championsInput" type="checkbox"> <span class="badge champions">CL</span> Champions League</label>
+        <label><input id="europaInput" type="checkbox"> <span class="badge europa">EL</span> Europa League</label>
+        <label><input id="conferenceInput" type="checkbox"> <span class="badge conference">CO</span> Conference League</label>
+      </div>
+
+      <div class="modal-actions">
+        <button id="deleteAppearanceBtn" class="danger-btn">Remover da tabela</button>
+        <button id="saveAppearanceBtn" class="primary-btn">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="js/db.js"></script>
+  <script src="js/system.js"></script>
+</body>
+</html>

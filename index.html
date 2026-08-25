@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Football Tables — Meus sistemas</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Zvezda Tabelas</h1>
+      <p>Sistemas de tabelas de futebol</p>
+    </div>
+    <div class="top-actions">
+      <button id="importBtn" class="secondary-btn">📂 Importar backup</button>
+      <button id="exportBtn" class="secondary-btn">💾 Exportar backup</button>
+      <button id="newSystemBtn" class="primary-btn">+ Novo sistema</button>
+      <input id="importFile" type="file" accept=".json,application/json" hidden>
+    </div>
+  </header>
+
+  <main class="dashboard">
+    <section class="hero-card">
+      <div>
+        <span class="eyebrow">PAINEL PRINCIPAL</span>
+        <h2>Meus sistemas</h2>
+        <p>Crie sistemas independentes para campeonatos, ligas ou qualquer competição que quiser organizar.</p>
+      </div>
+      <button id="heroNewSystemBtn" class="primary-btn">+ Criar sistema</button>
+    </section>
+
+    <section>
+      <div class="section-heading">
+        <div>
+          <h2>Sistemas salvos</h2>
+          <p id="systemCount">0 sistemas</p>
+        </div>
+      </div>
+      <div id="systemsGrid" class="systems-grid"></div>
+    </section>
+  </main>
+
+  <div id="systemModal" class="modal hidden">
+    <div class="modal-content small-modal">
+      <button class="close-modal" id="closeSystemModal">×</button>
+      <h2 id="systemModalTitle">Novo sistema</h2>
+      <label class="field-label">
+        Nome do sistema
+        <input id="systemNameInput" maxlength="80" placeholder="Ex.: Brasileirão">
+      </label>
+      <label class="field-label">
+        Descrição <span>(opcional)</span>
+        <textarea id="systemDescriptionInput" maxlength="240" placeholder="Ex.: Campeonato nacional"></textarea>
+      </label>
+      <div class="modal-actions">
+        <button id="cancelSystemBtn" class="secondary-btn">Cancelar</button>
+        <button id="saveSystemBtn" class="primary-btn">Criar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="js/db.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
